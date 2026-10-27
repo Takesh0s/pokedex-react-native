@@ -1,10 +1,11 @@
 import { memo } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { DEFAULT_TYPE_COLOR, TYPE_COLORS } from '../theme/typeColors';
 import { Pokemon } from '../types/pokemon';
 
 type Props = {
   pokemon: Pokemon;
+  onPress?: (pokemon: Pokemon) => void;
 };
 
 function formatNumber(id: number): string {
@@ -15,9 +16,15 @@ function capitalize(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-function PokemonCardComponent({ pokemon }: Props) {
+function PokemonCardComponent({ pokemon, onPress }: Props) {
   return (
-    <View style={styles.card}>
+    <Pressable
+      onPress={() => onPress?.(pokemon)}
+      disabled={!onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${capitalize(pokemon.name)}, tocar o grito`}
+      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+    >
       {pokemon.imageUrl ? (
         <Image
           source={{ uri: pokemon.imageUrl }}
@@ -48,7 +55,7 @@ function PokemonCardComponent({ pokemon }: Props) {
           </View>
         ))}
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -62,6 +69,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     borderRadius: 16,
     backgroundColor: '#F2F2F2',
+  },
+  cardPressed: {
+    opacity: 0.6,
+    transform: [{ scale: 0.97 }],
   },
   image: {
     width: 96,
