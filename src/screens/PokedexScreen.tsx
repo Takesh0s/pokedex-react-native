@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import {
   ActivityIndicator,
   Button,
@@ -8,10 +9,22 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PokemonCard } from '../components/PokemonCard';
+import { usePokemonCry } from '../hooks/usePokemonCry';
 import { usePokemonList } from '../hooks/usePokemonList';
+import { Pokemon } from '../types/pokemon';
 
 export function PokedexScreen() {
   const { pokemons, loading, error, hasMore, loadMore } = usePokemonList();
+  const { playCry } = usePokemonCry();
+
+  const handlePokemonPress = useCallback(
+    (pokemon: Pokemon) => {
+      if (pokemon.cryUrl) {
+        playCry(pokemon.cryUrl);
+      }
+    },
+    [playCry]
+  );
 
   if (pokemons.length === 0 && loading) {
     return (
@@ -59,7 +72,9 @@ export function PokedexScreen() {
       <FlatList
         data={pokemons}
         keyExtractor={(pokemon) => String(pokemon.id)}
-        renderItem={({ item }) => <PokemonCard pokemon={item} />}
+        renderItem={({ item }) => (
+          <PokemonCard pokemon={item} onPress={handlePokemonPress} />
+        )}
         numColumns={2}
         columnWrapperStyle={styles.row}
         contentContainerStyle={styles.list}
